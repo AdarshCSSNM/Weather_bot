@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Weather Chatbot</title>
+</head>
+<body>
+<style>
+#weather-form {
+  text-align: center;
+  margin-top: 50px;
+}
+
+/* Label styling */
+#weather-form label {
+  font-size: 18px;
+  margin-right: 10px;
+}
+
+/* Input styling */
+#location-input {
+  padding: 8px 15px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-right: 10px;
+}
+
+/* Button styling */
+button[type="submit"] {
+  padding: 8px 20px;
+  font-size: 16px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button[type="submit"]:hover {
+  background-color: #45a049;
+}
+
+/* Weather info display */
+#weather-info {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 20px;
+}
+</style>
+<style>
+        @media (prefers-color-scheme: dark) {
+            body {
+                background: black;
+                color: white;
+            }
+        }
+    </style>
+<form id="weather-form">
+  <label for="location-input">Enter your location:</label>
+  <input type="text" id="location-input" name="location" placeholder="City or Zip Code" required>
+  <button type="submit">Get Weather</button>
+</form>
+<div id="weather-info"></div>
+<script>
+const weatherForm = document.getElementById('weather-form');
+const weatherInfo = document.getElementById('weather-info');
+
+weatherForm.addEventListener('submit', async (event) => {
+  event.preventDefault();
+  
+  const location = document.getElementById('location-input').value;
+  const apiKey = ''; // Replace 'YOUR_API_KEY' with your actual API key
+  const url = `https://api.openweathermap.org/data/2.5/weather?q=${location}&appid=${apiKey}&units=imperial`;
+
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
+    const icon = `http://openweathermap.org/img/wn/${data.weather[0].icon}.png`;
+    const temperature = data.main.temp;
+    const description = data.weather[0].description;
+
+    weatherInfo.innerHTML = `
+      <h2>Current Weather for ${location}</h2>
+      <img src="${icon}" alt="${description}">
+      <p>Temperature: ${temperature} &#8457;</p>
+      <p>Condition: ${description}</p>
+    `;    
+    const msg = new SpeechSynthesisUtterance();
+    msg.text = `Current weather for ${location}. Temperature is ${temperature} degrees Fahrenheit. Condition is ${description}.`;
+    window.speechSynthesis.speak(msg);
+  } catch (error) {
+    weatherInfo.innerHTML = '<p>Unable to retrieve weather data</p>';
+  }
+});
+const msg = new SpeechSynthesisUtterance();
+msg.text = `Current weather for ${location}. Temperature is ${temperature} degrees Fahrenheit. Condition is ${description}.`;
+msg.lang = 'en-IN'; // Set language to Indian English
+window.speechSynthesis.speak(msg);
+
+</script>
+</body>
+</html>
